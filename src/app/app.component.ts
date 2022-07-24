@@ -34,18 +34,41 @@ export class AppComponent {
 
   constructor(private http: HttpClient,
   ) { }
-  makePostRequest() {
-    this.showLoading = true;
-    const httpOptions = {
- 	 	headers: new HttpHeaders()
+
+  getFormUrlEncoded(obj: any, prefix: any):any {
+		let str = [],
+			self = this,
+			p;
+		for (p in obj) {
+			if (obj.hasOwnProperty(p)) {
+				let k = prefix ? prefix + '[' + p + ']' : p,
+					v = obj[p];
+				str.push(
+					v !== null && typeof v === 'object'
+						? self.getFormUrlEncoded(v, k)
+						: encodeURIComponent(k) + '=' + encodeURIComponent(v)
+				);
+			}
+		}
+		return str.join('&');
 	}
 
-    httpOptions.headers.append('Access-Control-Allow-Origin', '*');
-    httpOptions.headers.append('Content-Type', 'application/json');
-    httpOptions.headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+  makePostRequest() {
+    this.showLoading = true;
+   
 
+    // httpOptions.headers.append('Access-Control-Allow-Origin', '*');
+    // httpOptions.headers.append('Content-Type', 'application/json');
+    // httpOptions.headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+	 let httpOptionss: any = {
+			headers: new HttpHeaders({
+				Accept: 'application/json, text/javascript, */*; q=0.01',
+				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+			})
+		};
     
-    this.http.post<any>('http://saprpe.ifex.rpdom.local:8000/zrpay_rate?sap-client=100', { // change this URL
+    this.http.post<any>('https://192.168.75.11:44300/zrpay_rate?sap-client=100', this.getFormUrlEncoded({ // change this URL
       BUKRS: this.BUKRS,
       VERTRART: this.VERTRART,
       CDDAT: this.CDDAT,
@@ -55,7 +78,7 @@ export class AppComponent {
       ZINS: this.ZINS,
       VAG: this.VAG,
       WERS: this.WERS
-    },).subscribe(sapResponse => {
+    },null),httpOptionss).subscribe(sapResponse => {
 
       //this.result = sapResponse; // Enable this line 
       this.result = this.getDummyResponse();// comment this line  

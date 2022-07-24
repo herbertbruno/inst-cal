@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface IResult {
   terminnr: number;
@@ -36,7 +36,16 @@ export class AppComponent {
   ) { }
   makePostRequest() {
     this.showLoading = true;
-    this.http.post<any>('https://reqres.in/api/posts', { // change this URL
+    const httpOptions = {
+ 	 	headers: new HttpHeaders()
+	}
+
+    httpOptions.headers.append('Access-Control-Allow-Origin', '*');
+    httpOptions.headers.append('Content-Type', 'application/json');
+    httpOptions.headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+
+    
+    this.http.post<any>('http://saprpe.ifex.rpdom.local:8000/zrpay_rate?sap-client=100', { // change this URL
       BUKRS: this.BUKRS,
       VERTRART: this.VERTRART,
       CDDAT: this.CDDAT,
@@ -46,7 +55,7 @@ export class AppComponent {
       ZINS: this.ZINS,
       VAG: this.VAG,
       WERS: this.WERS
-    }).subscribe(sapResponse => {
+    },).subscribe(sapResponse => {
 
       //this.result = sapResponse; // Enable this line 
       this.result = this.getDummyResponse();// comment this line  
